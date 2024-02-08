@@ -5,8 +5,7 @@ import {
   Col,
   Form,
   Button,
-  Card,
-  Row,
+  Card
 } from "react-bootstrap";
 
 import Auth from "../utils/auth";
