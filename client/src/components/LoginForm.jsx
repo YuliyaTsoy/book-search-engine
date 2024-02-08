@@ -44,7 +44,7 @@ const LoginForm = () => {
       console.log(user);
       Auth.login(token);
     } catch (err) {
-      console.error(err);
+      // console.error(err);
       setShowAlert(true);
     }
 
