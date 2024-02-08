@@ -1,21 +1,14 @@
-import { useState, useEffect } from "react";
-import {
-  Container,
-  Col,
-  Form,
-  Button,
-  Card
-} from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import { Container, Col, Form, Button, Card, Row } from "react-bootstrap";
 
 import Auth from "../utils/auth";
 import { searchGoogleBooks } from "../utils/API";
 import { saveBookIds, getSavedBookIds } from "../utils/localStorage";
-
-// import Apollo hook and mutation
+import { useMutation } from "@apollo/client";
 import { SAVE_BOOK } from "../utils/mutations";
-import { useMutation } from "@apollo/client";;
 
 const SearchBooks = () => {
+  const [saveBook] = useMutation(SAVE_BOOK);
   // create state for holding returned google api data
   const [searchedBooks, setSearchedBooks] = useState([]);
   // create state for holding our search field data
@@ -29,9 +22,6 @@ const SearchBooks = () => {
   useEffect(() => {
     return () => saveBookIds(savedBookIds);
   });
-
-  // use the SAVE_BOOK mutation
-  const [saveBook] = useMutation(SAVE_BOOK);
 
   // create method to search for books and set state on form submit
   const handleFormSubmit = async (event) => {
@@ -78,9 +68,23 @@ const SearchBooks = () => {
     }
 
     try {
-      const { data } = await saveBook({
-        variables: { bookData: bookToSave },
+      // const response = await saveBook(bookToSave, token);
+      const response = await saveBook({
+        variables: {
+          input: {
+            authors: bookToSave.authors,
+            description: bookToSave.description,
+            title: bookToSave.title,
+            bookId: bookToSave.bookId,
+            image: bookToSave.image,
+            link: bookToSave.link,
+          },
+        },
       });
+
+      if (!response) {
+        throw new Error("something went wrong!");
+      }
 
       // if book successfully saves to user's account, save book id to state
       setSavedBookIds([...savedBookIds, bookToSave.bookId]);
@@ -91,11 +95,11 @@ const SearchBooks = () => {
 
   return (
     <>
-      <div fluid className="text-light bg-dark">
+      <div className="text-light bg-dark pt-5">
         <Container>
           <h1>Search for Books!</h1>
           <Form onSubmit={handleFormSubmit}>
-            <Form.Row>
+            <Row>
               <Col xs={12} md={8}>
                 <Form.Control
                   name="searchInput"
@@ -111,7 +115,7 @@ const SearchBooks = () => {
                   Submit Search
                 </Button>
               </Col>
-            </Form.Row>
+            </Row>
           </Form>
         </Container>
       </div>
@@ -122,10 +126,11 @@ const SearchBooks = () => {
             ? `Viewing ${searchedBooks.length} results:`
             : "Search for a book to begin"}
         </h2>
-        <CardColumns>
+        <Row>
           {searchedBooks.map((book) => {
             return (
-              <Card border="dark" key={book.bookId}>
+              <Col md="4" key={book.bookId}>
+                <Card border="dark">
                   {book.image ? (
                     <Card.Img
                       src={book.image}
@@ -154,10 +159,10 @@ const SearchBooks = () => {
                     )}
                   </Card.Body>
                 </Card>
-            
+              </Col>
             );
           })}
-        </CardColumns>
+        </Row>
       </Container>
     </>
   );
