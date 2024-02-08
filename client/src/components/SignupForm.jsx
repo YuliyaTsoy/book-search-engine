@@ -7,6 +7,7 @@ import { ADD_USER } from "../utils/mutations";
 import Auth from '../utils/auth';
 
 const SignupForm = () => {
+  const [addUser] = useMutation(ADD_USER);
   // set initial form state
   const [userFormData, setUserFormData] = useState({ username: '', email: '', password: '' });
   // set state for form validation
@@ -15,15 +16,6 @@ const SignupForm = () => {
   const [showAlert, setShowAlert] = useState(false);
 
   // declared the addUser with the useMutation
-  const [addUser, { error }] = useMutation(ADD_USER);
-
-  useEffect(() => {
-    if (error) {
-    setShowAlert(true);
-    } else {
-      setShowAlert(false);
-    }
-  }, [error]);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -42,13 +34,29 @@ const SignupForm = () => {
 
      // use addUser function
      try {
-      const { data } = await addUser({
-        variables: { ...userFormData },
+      // const response = await createUser(userFormData);
+      const response = await addUser({
+        variables: {
+          username: userFormData.username,
+          email: userFormData.email,
+          password: userFormData.password,
+        },
       });
 
-      Auth.login(data.addUser.token);
-    } catch (e) {
-      console.error(e);
+      if (!response) {
+        throw new Error("something went wrong!");
+      }
+
+      // Use Use mutation hook to pass in variables from mutations.js (import function from apollo hook and mutations/queries.js)
+
+      const { token, user } = response.data.addUser;
+      console.log(user);
+      Auth.login(token);
+
+
+    } catch (err) {
+      console.error(err);
+      setShowAlert(true);
     }
 
     setUserFormData({

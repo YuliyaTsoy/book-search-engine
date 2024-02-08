@@ -13,12 +13,12 @@ const LoginForm = () => {
   const [showAlert, setShowAlert] = useState(false);
 
    // setting loginUser stateful variable with useMutation
-   const [loginUser, { error }] = useMutation(LOGIN_USER);
+   const [loginUser] = useMutation(LOGIN_USER);
 
-   useEffect(() => {
-     if (error) setShowAlert(true);
-     else setShowAlert(false);
-   }, [error])
+   const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setUserFormData({ ...userFormData, [name]: value });
+  };
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
@@ -32,13 +32,20 @@ const LoginForm = () => {
 
     // use loginUser function
     try {
-      const { data } = await loginUser({
-        variables: { ...userFormData },
-      });
+      // const response = await loginUser(userFormData);
+      const response = await loginUser({
+        variables: {
+          email: userFormData.email,
+          password: userFormData.password
+        }
+      })
 
-      Auth.login(data.login.token);
-    } catch (e) {
-      console.error(e);
+      const { token, user } = response.data.login;
+      console.log(user);
+      Auth.login(token);
+    } catch (err) {
+      console.error(err);
+      setShowAlert(true);
     }
 
     setUserFormData({
