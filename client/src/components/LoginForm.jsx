@@ -32,7 +32,7 @@ const LoginForm = () => {
 
     // use loginUser function
     try {
-      // const response = await loginUser(userFormData);
+     
       const response = await loginUser({
         variables: {
           email: userFormData.email,

@@ -3,7 +3,7 @@ const path = require('path');
 // Connect Apollo Server:
 const { ApolloServer } = require('@apollo/server');
 // middleware to connect the Appolo server:
-const { expressMiddleware } = require('@apollo/server/express4');
+const { authMiddleware } = require("./utils/auth");
 const { typeDefs, resolvers } = require('./schemas');
 const db = require('./config/connection');
 
@@ -13,6 +13,7 @@ const PORT = process.env.PORT || 3001;
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  context: authMiddleware,
 });
 
 // starts Apollo server:
@@ -27,7 +28,7 @@ const startApolloServer = async () => {
 
 // if we're in production, serve client/build as static assets
   if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.join(__dirname, '../client/build')));
+    app.use(express.static(path.join(__dirname, '../client/dist')));
     app.get('*', (req, res) => {
       res.sendFile(path.join(__dirname, '../client/dist/index.html'));
     });
