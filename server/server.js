@@ -2,9 +2,11 @@ const express = require('express');
 const path = require('path');
 // Connect Apollo Server:
 const { ApolloServer } = require('@apollo/server');
+const { expressMiddleware } = require('@apollo/server/express4');
 // middleware to connect the Appolo server:
 const { authMiddleware } = require("./utils/auth");
 const { typeDefs, resolvers } = require('./schemas');
+const gql = require("graphql-tag");
 const db = require('./config/connection');
 
 const app = express();
@@ -29,7 +31,7 @@ app.use(express.json());
 
   const startApolloServer = async () => {
     await server.start();
-    server.applyMiddleware({ app });
+    app.use('/graphql', expressMiddleware(server));
 
   db.once('open', () => {
     app.listen(PORT, () => {
