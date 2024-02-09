@@ -1,11 +1,4 @@
-import {
-  Container,
-  Card,
-  Button,
-  Row,
-  Col
-} from 'react-bootstrap';
-
+import {Container,Card,Button,Row,Col} from 'react-bootstrap';
 import Auth from "../utils/auth";
 import { removeBookId } from "../utils/localStorage";
 import { useQuery, useMutation } from "@apollo/client";
@@ -36,14 +29,14 @@ const SavedBooks = () => {
     }
   };
 
-  // if data isn't here yet, say so
+  // if data isn't here yet -> message
   if (loading) {
     return <h2>LOADING...</h2>;
   }
 
   return (
     <>
-      <div fluid className="text-light bg-dark">
+      <div fluid className="text-light p-5 bg-dark">
         <Container>
           <h1>Viewing saved books!</h1>
         </Container>
